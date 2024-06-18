@@ -31,6 +31,9 @@ async function run() {
         // Connect the client to the server	(optional starting in v4.7)
         // await client.connect();
 
+        const userCollection = client.db("alterwhiteDB").collection("users");
+        const queryCollection = client.db("alterwhiteDB").collection("queries");
+
 
         // jwt related api
         app.post('/jwt', async (req, res) => {
@@ -55,7 +58,31 @@ async function run() {
             })
         }
 
+        // user related api
+        app.post('/users', async (req, res) => {
+            const user = req.body;
+            const query = { email: user.email }
+            const isUserExist = await userCollection.findOne(query);
+            if (isUserExist) {
+                return res.send({ message: 'Existing User', insertedId: null })
+            }
+            const result = await userCollection.insertOne(user);
+            res.send(result);
+        });
 
+        // query related api
+        app.get('/queries/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { userEmail: email }
+            const result = await queryCollection.find(query).toArray();
+            // console.log(result);
+            res.send(result);
+        })
+        app.post('/queries', verifyToken, async (req, res) => {
+            const data = req.body;
+            const result = await queryCollection.insertOne(data);
+            res.send(result);
+        })
 
 
         // Send a ping to confirm a successful connection
