@@ -134,9 +134,21 @@ async function run() {
             const result = await recommendationCollection.find(query).toArray();
             res.send(result);
         })
+        app.get('/recommendations/my/:email', verifyToken, async (req, res) => {
+            const email = req.params.email;
+            const query = { recommenderEmail: email };
+            const result = await recommendationCollection.find(query).toArray();
+            res.send(result);
+        })
         app.post('/recommendations', verifyToken, async (req, res) => {
             const data = req.body;
             const result = await recommendationCollection.insertOne(data)
+            res.send(result);
+        })
+        app.delete('/recommendations/delete/:id', verifyToken, async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await recommendationCollection.deleteOne(query);
             res.send(result);
         })
 
