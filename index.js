@@ -103,6 +103,16 @@ async function run() {
             const result = await queryCollection.updateOne(filter, updateDoc)
             res.send(result);
         })
+        app.put('/queries/decrement/:id', verifyToken, async (req, res) => {
+            const id = req.params.id;
+            console.log(id);
+            const filter = { _id: new ObjectId(id) }
+            const updateDoc = {
+                $inc: { recommendationCount: -1 }
+            }
+            const result = await queryCollection.updateOne(filter, updateDoc)
+            res.send(result);
+        })
         app.patch('/queries/update/:id', verifyToken, async (req, res) => {
             const id = req.params.id;
             const data = req.body;
@@ -137,6 +147,12 @@ async function run() {
         app.get('/recommendations/my/:email', verifyToken, async (req, res) => {
             const email = req.params.email;
             const query = { recommenderEmail: email };
+            const result = await recommendationCollection.find(query).toArray();
+            res.send(result);
+        })
+        app.get('/recommendations/for-me/:email', verifyToken, async (req, res) => {
+            const email = req.params.email;
+            const query = { queryUserEmail: email };
             const result = await recommendationCollection.find(query).toArray();
             res.send(result);
         })
