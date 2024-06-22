@@ -79,7 +79,7 @@ async function run() {
                 productName: { $regex: filter.search, $options: 'i' }
             };
             const cursor = queryCollection.find(query);
-            const result = await cursor.toArray();
+            const result = await cursor.sort({ date: -1 }).toArray();
             res.send(result);
 
             // const result = await queryCollection.find().sort({ date: -1 }).toArray();
